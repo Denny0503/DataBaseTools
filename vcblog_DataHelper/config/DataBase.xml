@@ -1,0 +1,9 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<DataBaseSetting>
+    <Data-Source>127.0.0.1</Data-Source>
+    <Database>wordpress</Database>
+    <User-ID>root</User-ID>
+    <Password>server</Password>
+    <Charset>utf8</Charset>
+    <Port>3306</Port>
+</DataBaseSetting>

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -12,6 +13,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Navigation;
 using System.Windows.Shapes;
+using vcblog_DataHelper;
 
 namespace DataBaseTools
 {
@@ -20,9 +22,58 @@ namespace DataBaseTools
     /// </summary>
     public partial class MainWindow : Window
     {
+        MysqlDataTools mySQLDataTools = null;       //数据库连接助手
+
         public MainWindow()
         {
             InitializeComponent();
+
+            //开启数据库管理任务，把数据库操作添加到队列中进行统一管理
+            mySQLDataTools = MysqlDataTools.Instance;
+            mySQLDataTools.SendMessageEvent += UiLoginMessage;
+            mySQLDataTools.Start();
+
+        }
+
+        private void UiLoginMessage(DataToolsUIMsg message)
+        {
+            this.Dispatcher.BeginInvoke(System.Windows.Threading.DispatcherPriority.Background, new Action(() =>
+            {
+                switch (message.type)
+                {
+                    case "ShowTables":
+                        if (null != message.dataSet && message.dataSet.Tables[0].Rows.Count > 0)
+                        {
+                            TablesListView.BeginInit();
+                            TablesListView.Items.Clear();
+                            foreach (DataRow row in message.dataSet.Tables[0].Rows)
+                            {
+                                ListViewItem item = new ListViewItem();
+                                item.Content = row[0].ToString();
+                                TablesListView.Items.Add(item);
+                            }
+                            TablesListView.EndInit();
+                        }
+                        break;
+                    case "exception":
+                        MessageBox.Show(message.message);
+                        Status1.Content = message.message;
+                        break;
+                }
+            }));
+        }
+
+        private void TablesListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+
+        }
+
+        private void BtnConnect_Click(object sender, RoutedEventArgs e)
+        {
+            DataToolsQueueMsg msg = new DataToolsQueueMsg();
+            msg.type = DataBaseType.ShowTables;
+            msg.marks = "ShowTables";
+            mySQLDataTools.Enqueue(msg);
         }
     }
 }

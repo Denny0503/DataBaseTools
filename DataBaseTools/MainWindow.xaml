@@ -5,8 +5,83 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:DataBaseTools"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
+        Title="数据库工具" Height="720" Width="1024" WindowStartupLocation="CenterScreen" WindowState="Maximized">
     <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="23"/>
+            <RowDefinition Height="36"/>
+            <RowDefinition Height="*"/>
+            <RowDefinition Height="23"/>
+        </Grid.RowDefinitions>
+        <!--菜单栏-->
+        <Menu Grid.Row="0" VerticalAlignment="Stretch">
+            <MenuItem Height="23" Width="60" Header="文件(F)" FontSize="13" VerticalAlignment="Stretch">
+                <MenuItem Header="打开" Height="26" VerticalAlignment="Stretch"/>
+            </MenuItem>
+            <MenuItem Height="23" Width="60" Header="设置(S)" FontSize="13" VerticalAlignment="Stretch"/>
+        </Menu>
         
+        <!--工具栏-->
+        <ToolBarPanel Grid.Row="1" Height="36" Margin="0">
+            <ToolBar Height="36" Margin="0" Padding="0" VerticalAlignment="Stretch">
+                <Button Name="BtnConnect" Click="BtnConnect_Click" Content="新建连接" Width="60" VerticalAlignment="Stretch" Padding="0"/>
+            </ToolBar>
+        </ToolBarPanel>
+        
+        <!--内容区域，中部面板-->
+        <Grid Grid.Row="2">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="200"/>
+            </Grid.ColumnDefinitions>
+
+            <!--数据库列表-->
+            <Grid Grid.Column="0">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="30"></RowDefinition>
+                    <RowDefinition Height="50*"></RowDefinition>
+                </Grid.RowDefinitions>
+                <ComboBox Name="DataBaseList" Grid.Row="0" Margin="3,3,1,1" IsReadOnly="True" ></ComboBox>
+                <!--<TreeView Name="dbTreeView" SelectedItemChanged="dbTreeView_SelectedItemChanged" Grid.Row="1" Margin="3" />-->
+                <ListView Name="TablesListView" SelectionChanged="TablesListView_SelectionChanged" Grid.Row="1" Margin="3,2,0,0"></ListView>
+            </Grid>
+
+            <Grid VerticalAlignment="Stretch" Grid.Column="1" HorizontalAlignment="Stretch">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="50*"></RowDefinition>
+                    <RowDefinition Height="150"></RowDefinition>
+                </Grid.RowDefinitions>
+                <TabControl Grid.Row="0" Margin="3" Padding="1">
+                    <TabItem Header="结果页1">
+                        <TextBox HorizontalAlignment="Stretch" Margin="2" TextWrapping="Wrap" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+                    </TabItem>
+                    <TabItem Header="结果页2">
+                        <TextBox Margin="2" TextWrapping="Wrap"/>
+                    </TabItem>
+                </TabControl>
+
+                <GroupBox Header="日志信息" Grid.Row="1">
+                    <TextBox Name="textMessage" HorizontalAlignment="Stretch" Margin="0" TextWrapping="Wrap" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+                </GroupBox>
+            </Grid>
+
+            <GroupBox Header="数据表列名" HorizontalAlignment="Stretch" Margin="1,3,3,1" Padding="0" VerticalAlignment="Stretch" Grid.Column="2">
+                <TreeView HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch"/>
+            </GroupBox>
+
+        </Grid>
+
+        <!--底部状态栏和进度-->
+        <Grid Grid.Row="3" HorizontalAlignment="Stretch" VerticalAlignment="Stretch">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+                <ColumnDefinition Width="50*"></ColumnDefinition>
+                <ColumnDefinition Width="300"></ColumnDefinition>
+            </Grid.ColumnDefinitions>
+            <Label Name="Status1" Height="20" Content="状态" Padding="0" Margin="3,0,3,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Grid.Column="0"></Label>
+            <Label Name="Status2" Height="20" Content="进度信息" Padding="0" Margin="3,0,3,0" HorizontalAlignment="Stretch" VerticalContentAlignment="Center" Grid.Column="1"></Label>
+            <ProgressBar Name="processBar" Grid.Column="2" HorizontalAlignment="Stretch" Height="20" VerticalAlignment="Center" Margin="3,3,13,3" />
+        </Grid>
     </Grid>
 </Window>
