@@ -13,11 +13,19 @@ namespace vcblog_DataHelper
 {
     public sealed class MyDataHelper
     {
+        string xmlFilePath = @"config\DataBase.xml";
+        string connectionStr = "Data Source=";
+        string connectSTR = "Data Source=";     //连接MySQL，不指定数据库
+        string dataSourceIP = "";       //数据库连接地址
+        string dataPort = "";           //端口
+        string dataCharset = "";        //字符集编码
+        string dataUserID = "";         //用户名
+        string dataPassword = "";         //密码
 
         public static readonly MyDataHelper Instance = new MyDataHelper();
 
         public static string connectionString = "";             //数据库连接字符串
-        private MySqlConnection connectionStay = null;       //数据库连接
+        private MySqlConnection connectionStay = null;       //数据库连接句柄
         private static XmlNode database = null;                     //数据库
 
         /// <summary>
@@ -40,15 +48,14 @@ namespace vcblog_DataHelper
         /// </summary>
         private void GetDataSource()
         {
-            string xmlFilePath = @"config\DataBase.xml";
-            string connectionStr = "Data Source=";
-            string connectSTR = "Data Source=";     //连接MySQL，创建数据库
             if (File.Exists(xmlFilePath))
             {
                 XmlDocument doc = new XmlDocument();
                 doc.Load(xmlFilePath);
                 XmlNode dataSource = doc.SelectSingleNode("/DataBaseSetting/Data-Source").FirstChild;
                 XmlNode dataSourcePort = doc.SelectSingleNode("/DataBaseSetting/Port").FirstChild;
+                dataSourceIP = dataSource.Value.ToString();     //数据库连接地址
+                dataPort = dataSourcePort.Value.ToLower();      //端口
                 connectionStr += dataSource.Value + ";Port=";
                 connectionStr += dataSourcePort.Value + ";Database=";
                 connectSTR += dataSource.Value + ";Port=";
@@ -58,14 +65,17 @@ namespace vcblog_DataHelper
                 connectionStr += database.Value + ";User ID=";
 
                 XmlNode userID = doc.SelectSingleNode("/DataBaseSetting/User-ID").FirstChild;
+                dataUserID = userID.Value.ToLower();            //用户名
                 connectionStr += userID.Value + ";Password=";
                 connectSTR += userID.Value + ";Password=";
 
                 XmlNode Passwd = doc.SelectSingleNode("/DataBaseSetting/Password").FirstChild;
+                dataPassword = Passwd.Value.ToString();         //密码
                 connectionStr += Passwd.Value + ";Charset=";
                 connectSTR += Passwd.Value + ";Charset=";
 
                 XmlNode charset = doc.SelectSingleNode("/DataBaseSetting/Charset").FirstChild;
+                dataCharset = charset.Value.ToString();         //字符集编码
                 connectionStr += charset.Value;
                 connectSTR += charset.Value;
 
@@ -89,7 +99,62 @@ namespace vcblog_DataHelper
         }
 
         /// <summary>
-        /// 创建数据库
+        /// 获取数据库连接字符串
+        /// </summary>
+        /// <param name="dataBase"></param>
+        /// <returns></returns>
+        public string GetConnectString(string dataBaseStr = "")
+        {
+            if (dataSourceIP.Equals(""))
+            {
+                GetDataSource();
+            }
+            
+            if (dataBaseStr.Equals(""))
+            {
+                return "Data Source=" + dataSourceIP + ";Port=" + dataPort + ";User ID=" + dataUserID + ";Password=" + 
+                    dataPassword + ";Charset=" + dataCharset;
+            }
+            else
+            {
+                return "Data Source=" + dataSourceIP + ";Database=" + dataBaseStr + ";Port=" + dataPort + ";User ID=" + dataUserID + 
+                    ";Password=" + dataPassword + ";Charset=" + dataCharset;
+            }
+        }
+
+        /// <summary>
+        /// 显示数据库列表
+        /// </summary>
+        /// <returns></returns>
+        public DataSet GetAllDataBase()
+        {
+            DataSet dataSet = null;
+            string sql = "SHOW DATABASES; ";
+            if (MyDataHelper.connectionString.Equals(""))
+            {
+                GetDataSource();
+            }
+            MyDataHelper.connectionString = GetConnectString();         //用于连接数据库，获取数据库列表
+            if (!MyDataHelper.connectionString.Equals(""))
+            {
+                try
+                {
+                    connectionStay = new MySqlConnection(MyDataHelper.connectionString);
+                    dataSet = GetDataSet(sql, CommandType.Text, null);
+                }
+                catch (Exception ex) { throw ex; }
+                finally
+                {
+                    connectionStay.Close();
+                    connectionStay.Dispose();
+                    connectionStay = null;
+                }
+            }
+            return dataSet;
+        }
+
+        /// <summary>
+        /// 创建数据库，同时可以指定创建数据库时的参数
         /// </summary>
         /// <param name="dataBase"></param>
         /// <param name="parameters"></param>
@@ -735,12 +800,13 @@ namespace vcblog_DataHelper
         /// 获取所有表
         /// </summary>
         /// <returns></returns>
-        public DataSet GetAllTables()
+        public DataSet GetAllTables(string dataBaseStr)
         {
             DataSet ds = null;
 
             try
             {
+                MyDataHelper.connectionString = GetConnectString(dataBaseStr);
                 ds = ExecuteSQLToDataSet("SHOW TABLES;");
             }
             catch (Exception ex) { throw ex; }

@@ -53,6 +53,7 @@ namespace vcblog_DataHelper
         GetColumnName,      //获取表中的字段
         InsertOrUpdate,     //插入记录，存在则更新，不能忽略传递ID主键
         ShowTables,         //显示数据库表
+        ShowDataBase,       //显示数据库列表
     };
 
     /// <summary>
@@ -322,8 +323,15 @@ namespace vcblog_DataHelper
                             case DataBaseType.ShowTables:
                                 DataToolsUIMsg resultTables = new DataToolsUIMsg();
                                 resultTables.type = queueinfo.marks;
-                                resultTables.dataSet = myDataHelper.GetAllTables();
+                                resultTables.dataSet = myDataHelper.GetAllTables(queueinfo.whereName);
                                 OnUiShowMessage(resultTables);
+                                break;
+                            case DataBaseType.ShowDataBase:
+                                //显示所有的数据库列表
+                                DataToolsUIMsg resultDatas = new DataToolsUIMsg();
+                                resultDatas.type = queueinfo.marks;
+                                resultDatas.dataSet = myDataHelper.GetAllDataBase();
+                                OnUiShowMessage(resultDatas);
                                 break;
                         }
                     }

@@ -42,6 +42,7 @@ namespace DataBaseTools
                 switch (message.type)
                 {
                     case "ShowTables":
+                        //显示某个数据库的数据表
                         if (null != message.dataSet && message.dataSet.Tables[0].Rows.Count > 0)
                         {
                             TablesListView.BeginInit();
@@ -53,6 +54,24 @@ namespace DataBaseTools
                                 TablesListView.Items.Add(item);
                             }
                             TablesListView.EndInit();
+                        }
+                        break;
+                    case "ShowDataBases":
+                        //显示所有数据库
+                        if (null != message.dataSet && message.dataSet.Tables[0].Rows.Count > 0)
+                        {
+                            DataBaseList.BeginInit();
+                            DataBaseList.Items.Clear();
+                            foreach (DataRow row in message.dataSet.Tables[0].Rows)
+                            {                               
+                                DataBaseList.Items.Add(row[0].ToString());
+                            }
+                            DataBaseList.EndInit();
+                        }
+                        if(DataBaseList.Items.Count > 0)
+                        {
+                            DataBaseList.SelectedIndex = 0;
+                            MessageBox.Show("读取数据库列表成功！", "提示");
                         }
                         break;
                     case "exception":
@@ -71,8 +90,18 @@ namespace DataBaseTools
         private void BtnConnect_Click(object sender, RoutedEventArgs e)
         {
             DataToolsQueueMsg msg = new DataToolsQueueMsg();
+            msg.type = DataBaseType.ShowDataBase;
+            msg.marks = "ShowDataBases";
+            mySQLDataTools.Enqueue(msg);
+
+        }
+
+        private void DataBaseList_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            DataToolsQueueMsg msg = new DataToolsQueueMsg();
             msg.type = DataBaseType.ShowTables;
             msg.marks = "ShowTables";
+            msg.whereName = DataBaseList.SelectedItem.ToString();
             mySQLDataTools.Enqueue(msg);
         }
     }
