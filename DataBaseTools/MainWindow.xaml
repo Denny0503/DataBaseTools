@@ -20,20 +20,20 @@
             </MenuItem>
             <MenuItem Height="23" Width="60" Header="设置(S)" FontSize="13" VerticalAlignment="Stretch"/>
         </Menu>
-        
+
         <!--工具栏-->
         <ToolBarPanel Grid.Row="1" Height="36" Margin="0">
             <ToolBar Height="36" Margin="0" Padding="0" VerticalAlignment="Stretch">
                 <Button Name="BtnConnect" Click="BtnConnect_Click" Content="新建连接" Width="60" VerticalAlignment="Stretch" Padding="0"/>
             </ToolBar>
         </ToolBarPanel>
-        
+
         <!--内容区域，中部面板-->
         <Grid Grid.Row="2">
             <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="250"/>
                 <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="200"/>
+                <ColumnDefinition Width="250"/>
             </Grid.ColumnDefinitions>
 
             <!--数据库列表-->
@@ -44,7 +44,14 @@
                 </Grid.RowDefinitions>
                 <ComboBox Name="DataBaseList" Grid.Row="0" Margin="3,3,1,1" IsReadOnly="True" SelectionChanged="DataBaseList_SelectionChanged"/>
                 <!--<TreeView Name="dbTreeView" SelectedItemChanged="dbTreeView_SelectedItemChanged" Grid.Row="1" Margin="3" />-->
-                <ListView Name="TablesListView" SelectionChanged="TablesListView_SelectionChanged" Grid.Row="1" Margin="3,2,0,0"></ListView>
+                <ListView Name="TablesListView" SelectionChanged="TablesListView_SelectionChanged" Grid.Row="1" Margin="3,2,0,0">
+                    <ListView.View>
+                        <GridView x:Name="dataBaseList">
+                            <GridViewColumn Header="序号" Width="50" DisplayMemberBinding="{Binding Path=Num}"/>
+                            <GridViewColumn x:Name="tableNameList" Header="数据表名" Width="200" DisplayMemberBinding="{Binding Path=Title}"/>
+                        </GridView>
+                    </ListView.View>
+                </ListView>
             </Grid>
 
             <Grid VerticalAlignment="Stretch" Grid.Column="1" HorizontalAlignment="Stretch">
@@ -54,10 +61,14 @@
                 </Grid.RowDefinitions>
                 <TabControl Grid.Row="0" Margin="3" Padding="1">
                     <TabItem Header="结果页1">
-                        <TextBox HorizontalAlignment="Stretch" Margin="2" TextWrapping="Wrap" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
+                        <DataGrid Name="AllTableData" Width="auto"/>
                     </TabItem>
                     <TabItem Header="结果页2">
-                        <TextBox Margin="2" TextWrapping="Wrap"/>
+                        <ListView Name="allTableData">
+                            <ListView.View>
+                                <GridView x:Name="tableDataItems"/>
+                            </ListView.View>
+                        </ListView>
                     </TabItem>
                 </TabControl>
 
@@ -65,10 +76,20 @@
                     <TextBox Name="textMessage" HorizontalAlignment="Stretch" Margin="0" TextWrapping="Wrap" VerticalAlignment="Stretch" ScrollViewer.CanContentScroll="True" VerticalScrollBarVisibility="Auto"/>
                 </GroupBox>
             </Grid>
-
-            <GroupBox Header="数据表列名" HorizontalAlignment="Stretch" Margin="1,3,3,1" Padding="0" VerticalAlignment="Stretch" Grid.Column="2">
-                <TreeView HorizontalAlignment="Stretch" Margin="0" VerticalAlignment="Stretch"/>
-            </GroupBox>
+            
+            <Grid Grid.Column="2">
+                <GroupBox Header="数据表列名" HorizontalAlignment="Stretch" Margin="1,3,3,1" Padding="0" VerticalAlignment="Stretch">
+                    <ListView Name="ColumnsListView" SelectionChanged="TablesListView_SelectionChanged" Grid.Row="1" Margin="3,2,0,0">
+                        <ListView.View>
+                            <GridView >
+                                <GridViewColumn Header="序号" Width="40" DisplayMemberBinding="{Binding Path=Num}"/>
+                                <GridViewColumn Header="数据表列名" Width="auto" DisplayMemberBinding="{Binding Path=Title}"/>
+                                <GridViewColumn Header="数据类型" Width="70" DisplayMemberBinding="{Binding Path=DataType}"/>
+                            </GridView>
+                        </ListView.View>
+                    </ListView>
+                </GroupBox>
+            </Grid>
 
         </Grid>
 

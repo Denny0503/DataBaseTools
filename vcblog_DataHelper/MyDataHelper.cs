@@ -113,12 +113,12 @@ namespace vcblog_DataHelper
             if (dataBaseStr.Equals(""))
             {
                 return "Data Source=" + dataSourceIP + ";Port=" + dataPort + ";User ID=" + dataUserID + ";Password=" + 
-                    dataPassword + ";Charset=" + dataCharset;
+                    dataPassword + ";Charset=" + dataCharset + ";Allow Zero Datetime=True";
             }
             else
             {
-                return "Data Source=" + dataSourceIP + ";Database=" + dataBaseStr + ";Port=" + dataPort + ";User ID=" + dataUserID + 
-                    ";Password=" + dataPassword + ";Charset=" + dataCharset;
+                return "Data Source=" + dataSourceIP + ";Database=" + dataBaseStr + ";Port=" + dataPort + ";User ID=" + dataUserID +
+                    ";Password=" + dataPassword + ";Charset=" + dataCharset + ";Allow Zero Datetime=True";
             }
         }
 
@@ -135,6 +135,39 @@ namespace vcblog_DataHelper
                 GetDataSource();
             }
             MyDataHelper.connectionString = GetConnectString();         //用于连接数据库，获取数据库列表
+            if (!MyDataHelper.connectionString.Equals(""))
+            {
+                try
+                {
+                    connectionStay = new MySqlConnection(MyDataHelper.connectionString);
+                    dataSet = GetDataSet(sql, CommandType.Text, null);
+                }
+                catch (Exception ex) { throw ex; }
+                finally
+                {
+                    connectionStay.Close();
+                    connectionStay.Dispose();
+                    connectionStay = null;
+                }
+            }
+            return dataSet;
+        }
+
+        /// <summary>
+        /// 获取表的所有列名
+        /// </summary>
+        /// <param name="dataBaseStr"></param>
+        /// <param name="tableNameStr"></param>
+        /// <returns></returns>
+        public DataSet GetAllTableColumns(string dataBaseStr, string tableNameStr)
+        {
+            DataSet dataSet = null;
+            string sql = "SHOW COLUMNS FROM " + dataBaseStr + "." + tableNameStr + ";";
+            if (MyDataHelper.connectionString.Equals(""))
+            {
+                GetDataSource();
+            }
+            MyDataHelper.connectionString = GetConnectString(dataBaseStr);         //用于连接数据库，获取数据库列表
             if (!MyDataHelper.connectionString.Equals(""))
             {
                 try
@@ -276,6 +309,37 @@ namespace vcblog_DataHelper
                 GetDataSource();
             }
 
+            if (!MyDataHelper.connectionString.Equals(""))
+            {
+                try
+                {
+                    connectionStay = new MySqlConnection(MyDataHelper.connectionString);
+                    dataSet = GetDataSet(sql, CommandType.Text, null);
+                }
+                catch (Exception ex) { throw ex; }
+                finally
+                {
+                    connectionStay.Close();
+                    connectionStay.Dispose();
+                    connectionStay = null;
+                }
+            }
+            return dataSet;
+        }
+
+        /// <summary>
+        /// 根据sql直接执行，同时指定数据库，返回结果集
+        /// </summary>
+        /// <param name="sql"></param>
+        public DataSet ExecuteSQLToDataSet_FromDataBase(string dataBaseStr, string sql)
+        {
+            DataSet dataSet = null;
+            if (MyDataHelper.connectionString.Equals(""))
+            {
+                GetDataSource();
+            }
+
+            MyDataHelper.connectionString = GetConnectString(dataBaseStr);
             if (!MyDataHelper.connectionString.Equals(""))
             {
                 try

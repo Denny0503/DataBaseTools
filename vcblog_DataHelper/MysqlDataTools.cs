@@ -54,6 +54,8 @@ namespace vcblog_DataHelper
         InsertOrUpdate,     //插入记录，存在则更新，不能忽略传递ID主键
         ShowTables,         //显示数据库表
         ShowDataBase,       //显示数据库列表
+        ShowTableColumns,   //显示表中的所有列名
+        ExecuteSQLFromDataBase,         //从某个数据库中获取数据
     };
 
     /// <summary>
@@ -304,6 +306,12 @@ namespace vcblog_DataHelper
                                 resultExecute.dataSet = myDataHelper.ExecuteSQLToDataSet(queueinfo.sql);
                                 OnUiShowMessage(resultExecute);
                                 break;
+                            case DataBaseType.ExecuteSQLFromDataBase:
+                                DataToolsUIMsg resultExecute_data = new DataToolsUIMsg();
+                                resultExecute_data.type = queueinfo.marks;
+                                resultExecute_data.dataSet = myDataHelper.ExecuteSQLToDataSet_FromDataBase(queueinfo.whereName, queueinfo.sql);
+                                OnUiShowMessage(resultExecute_data);
+                                break;
                             case DataBaseType.UpdateDataTable:
                                 myDataHelper.BatchUpdate(queueinfo.dataTable);
                                 break;
@@ -312,7 +320,7 @@ namespace vcblog_DataHelper
                                 break;
                             case DataBaseType.GetColumnName:
                                 //获取表中的字段
-                                //MySQLToolsUIMsg resultColumn = new MySQLToolsUIMsg();
+                                //DataToolsUIMsg resultColumn = new DataToolsUIMsg();
                                 //resultColumn.valuesList = myDataHelper.GetColumnName(queueinfo.message);
                                 //resultColumn.type = queueinfo.marks;
                                 //OnUiShowMessage(resultColumn);
@@ -332,6 +340,13 @@ namespace vcblog_DataHelper
                                 resultDatas.type = queueinfo.marks;
                                 resultDatas.dataSet = myDataHelper.GetAllDataBase();
                                 OnUiShowMessage(resultDatas);
+                                break;
+                            case DataBaseType.ShowTableColumns:
+                                //显示数据表中的所有列名
+                                DataToolsUIMsg resultColumns = new DataToolsUIMsg();
+                                resultColumns.type = queueinfo.marks;
+                                resultColumns.dataSet = myDataHelper.GetAllTableColumns(queueinfo.whereName, queueinfo.whereValue);
+                                OnUiShowMessage(resultColumns);
                                 break;
                         }
                     }

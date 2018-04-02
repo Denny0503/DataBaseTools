@@ -52,6 +52,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="ClassPackages\DataList.cs" />
     <Compile Include="MyDataHelper.cs" />
     <Compile Include="MysqlDataTools.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
